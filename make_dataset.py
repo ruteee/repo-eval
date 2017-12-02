@@ -38,7 +38,7 @@ requests = 0
 start_time = time()
 elapsed_time = 0
 
-browser = webdriver.PhantomJS(executable_path=r'./phantomjs', service_args=['--ignore-ssl-errors=true'])
+browser = webdriver.PhantomJS(service_args=['--ignore-ssl-errors=true'])
 
 for i in np.arange(0, len(full_names)):   
     
