@@ -43,35 +43,36 @@ browser = webdriver.PhantomJS(executable_path=r'./phantomjs', service_args=['--i
 for i in np.arange(0, len(full_names)):   
     
     browser = get_browser_url_reponse('http://www.github.com/{}', full_names[i])
-    soup = BeautifulSoup(browser.page_source, 'lxml')
     sleep(randint(1,6))
+    soup = BeautifulSoup(browser.page_source, 'lxml')
 
     requests += 1
     elapsed_time = time() - start_time
     print('Request:{}; Frequency: {} requests/s'.format(requests, requests/elapsed_time))
     clear_output(wait = True)
+
+    if not is_empty(soup, "div.repository-content"):
+        commits = get_value(soup, "li.commits span.num")
+        branches = get_value(soup,"a[href='/"+full_names[i]+"/branches'] span.num")
+        releases = get_value(soup, "a[href='/"+full_names[i]+"/releases'] span.num")
+        watchers = get_value(soup, "a[href='/"+full_names[i]+"/watchers']")
+        forks = get_value(soup, "a[href='/"+full_names[i]+"/network']")
+        stars = get_value(soup, "a[href='/"+full_names[i]+"/stargazers']")
     
-    commits = get_value(soup, "li.commits span.num")
-    branches = get_value(soup,"a[href='/"+full_names[i]+"/branches'] span.num")
-    releases = get_value(soup, "a[href='/"+full_names[i]+"/releases'] span.num")
-    watchers = get_value(soup, "a[href='/"+full_names[i]+"/watchers']")
-    forks = get_value(soup, "a[href='/"+full_names[i]+"/network']")
-    stars = get_value(soup, "a[href='/"+full_names[i]+"/stargazers']")
+        url_git_issues = 'http://www.github.com/{}/issues'
+        browser = get_browser_url_reponse(url_git_issues, full_names[i])
+        soup = BeautifulSoup(browser.page_source, 'lxml')
     
-    url_git_issues = 'http://www.github.com/{}/issues'
-    browser = get_browser_url_reponse(url_git_issues, full_names[i])
-    soup = BeautifulSoup(browser.page_source, 'lxml')
-    
-    if(not is_empty(soup, 'div.issues-listing div.table-list-filters a', 0)):
-        issues_open = get_value(soup, 'div.issues-listing div.table-list-filters a', 0)
-    else:
-        issues_open = 0
+        if(not is_empty(soup, 'div.issues-listing div.table-list-filters a', 0)):
+            issues_open = get_value(soup, 'div.issues-listing div.table-list-filters a', 0)
+        else:
+            issues_open = 0
         
-    if(not is_empty(soup, 'div.issues-listing div.table-list-filters a', 1)):
-        issues_closed = get_value(soup, 'div.issues-listing div.table-list-filters a', 1)
-    else:
-        issues_closed = 0
+        if(not is_empty(soup, 'div.issues-listing div.table-list-filters a', 1)):
+            issues_closed = get_value(soup, 'div.issues-listing div.table-list-filters a', 1)
+        else:
+            issues_closed = 0
     
-    git_stats.loc[i] = [full_names[i], commits, branches, releases, watchers, forks, issues_open, issues_closed, stars]
+        git_stats.loc[i] = [full_names[i], commits, branches, releases, watchers, forks, issues_open, issues_closed, stars]
     
 git_stats.to_csv('git_stats.csv')    
