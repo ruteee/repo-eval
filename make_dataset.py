@@ -48,10 +48,10 @@ for i in np.arange(0, len(full_names)):
 
     requests += 1
     elapsed_time = time() - start_time
-    print('Request:{}; Frequency: {} requests/s'.format(requests, requests/elapsed_time))
+    print('Request:{}; Repo:{}; Frequency: {} requests/s'.format(requests, full_names[i], requests/elapsed_time))
     clear_output(wait = True)
 
-    if not is_empty(soup, "div.repository-content"):
+    if not is_empty(soup, "div.overall-summary.overall-summary-bottomless"):
         commits = get_value(soup, "li.commits span.num")
         branches = get_value(soup,"a[href='/"+full_names[i]+"/branches'] span.num")
         releases = get_value(soup, "a[href='/"+full_names[i]+"/releases'] span.num")
